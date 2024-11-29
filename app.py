@@ -1,8 +1,9 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel
 from PyQt5.QtGui import QFont
 import sys
-import requests
 import pyttsx3
+import random
+
 
 class QuoteApp(QWidget):
     def __init__(self):
@@ -13,7 +14,8 @@ class QuoteApp(QWidget):
         
         # Set up the window
         self.setWindowTitle("Random Quote Generator")
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 600, 400)
+        self.setFixedSize(600, 400)  # Make the window non-resizable
         
         # Quote label
         self.quote_label = QLabel("Click 'Get Quote' to fetch a random quote", self)
@@ -42,20 +44,24 @@ class QuoteApp(QWidget):
         self.setLayout(layout)
 
     def get_quote(self):
-        """Fetch a random quote from the API and display it."""
-        try:
-            response = requests.get("https://api.quotable.io/random", verify=False)
-            if response.status_code == 200:
-                quote_data = response.json()
-                self.quote = quote_data['content']
-                self.author = quote_data['author']
-                self.quote_label.setText(f'"{self.quote}"')
-                self.author_label.setText(f"- {self.author}")
-            else:
-                self.quote_label.setText("Failed to retrieve quote")
-        except requests.exceptions.RequestException as e:
-            self.quote_label.setText("Error fetching quote")
-            print("Error:", e)
+        """Select a random quote from a predefined list and display it."""
+        quotes = [
+            {"content": "The only way to do great work is to love what you do.", "author": "Steve Jobs"},
+            {"content": "Success is not the key to happiness. Happiness is the key to success.", "author": "Albert Schweitzer"},
+            {"content": "Believe you can and you're halfway there.", "author": "Theodore Roosevelt"},
+            {"content": "You miss 100% of the shots you don't take.", "author": "Wayne Gretzky"},
+            {"content": "Act as if what you do makes a difference. It does.", "author": "William James"}
+        ]
+
+        # Choose a random quote from the list
+        quote_data = random.choice(quotes)
+        self.quote = quote_data['content']
+        self.author = quote_data['author']
+
+        # Update the labels
+        self.quote_label.setText(f'"{self.quote}"')
+        self.author_label.setText(f"- {self.author}")
+
 
     def read_aloud(self):
         """Use TTS to read the current quote."""
